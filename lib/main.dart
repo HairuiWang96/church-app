@@ -1181,7 +1181,7 @@ class ChurchInfoScreen extends StatelessWidget {
             Text('Wednesday Service: 5:30 PM'),
             const SizedBox(height: 16),
             Text('Contact: (337) 433-1443'),
-            Text('Email: info@fbclakecharles.org'),
+            Text('Email: FBCLakeCharles@yahoo.com'),
             const SizedBox(height: 16),
             Row(
               children: [
