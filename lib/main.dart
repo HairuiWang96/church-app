@@ -1169,8 +1169,8 @@ class ChurchInfoScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.asset(
-              'assets/images/logo.png',
-              height: 80, // Adjust as needed
+              'assets/images/FBC-color-horizontal.png',
+              height: 100, // Adjust as needed
             ).animate().fadeIn().slideY(begin: 0.3, end: 0),
             const SizedBox(height: 8),
             Text('3091 Advent Court, Lake Charles, LA 70607'),
