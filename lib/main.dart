@@ -191,13 +191,9 @@ class HomeScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'First Baptist Church Lake Charles',
-                      style:
-                          Theme.of(context).textTheme.displayMedium?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                    Image.asset(
+                      'assets/images/FBC-color-horizontal.png',
+                      height: 80, // Adjust as needed
                     ).animate().fadeIn().slideY(begin: 0.3, end: 0),
                     const SizedBox(height: 8),
                     Text(
@@ -1172,8 +1168,10 @@ class ChurchInfoScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('First Baptist Church Lake Charles',
-                style: Theme.of(context).textTheme.titleLarge),
+            Image.asset(
+              'assets/images/logo.png',
+              height: 80, // Adjust as needed
+            ).animate().fadeIn().slideY(begin: 0.3, end: 0),
             const SizedBox(height: 8),
             Text('3091 Advent Court, Lake Charles, LA 70607'),
             const SizedBox(height: 8),
