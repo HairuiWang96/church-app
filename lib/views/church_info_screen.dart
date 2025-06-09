@@ -15,9 +15,10 @@ class ChurchInfoScreen extends StatelessWidget {
           children: [
             Image.asset(
               'assets/images/FBC-color-horizontal.png',
-              height: 100, // Adjust as needed
-            ).animate().fadeIn().slideY(begin: 0.3, end: 0),
-            const SizedBox(height: 8),
+              height: 80,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 24),
             Text('3091 Advent Court, Lake Charles, LA 70607'),
             const SizedBox(height: 8),
             Text('Sunday Service: 10:30 AM'),
