@@ -4,13 +4,21 @@ This file defines the database structure using SQLAlchemy ORM (Object-Relational
 Each class represents a table in the database, and each attribute represents a column.
 """
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, Enum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
+import enum
 
 # Create a base class for all models
 Base = declarative_base()
+
+
+class UserRole(str, enum.Enum):
+    """User roles in the system"""
+    ADMIN = "admin"
+    MEMBER = "member"
+    GUEST = "guest"
 
 
 class User(Base):
@@ -29,8 +37,24 @@ class User(Base):
     # Password will be stored in hashed form for security
     hashed_password = Column(String)
 
-    # User's full name
-    full_name = Column(String)
+    # User's first and last name
+    first_name = Column(String)
+    last_name = Column(String)
+
+    # Contact information
+    phone_number = Column(String, nullable=True)
+    address = Column(String, nullable=True)
+    # For apartment number, suite, etc.
+    address2 = Column(String, nullable=True)
+    city = Column(String, nullable=True)
+    state = Column(String, nullable=True)
+
+    # User role in the system
+    role = Column(Enum(UserRole), default=UserRole.MEMBER)
+
+    # Additional information
+    date_of_birth = Column(DateTime, nullable=True)
+    join_date = Column(DateTime, default=datetime.utcnow)
 
     # Account status (active/inactive)
     is_active = Column(Boolean, default=True)

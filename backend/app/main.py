@@ -4,17 +4,14 @@ This file defines the FastAPI application and all API endpoints.
 It handles HTTP requests and responses, and coordinates with the database.
 """
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
+from datetime import datetime
 
 from . import models, schemas
 from .database import engine, get_db
-
-# Create database tables based on the models
-# This will create the tables if they don't exist
-models.Base.metadata.create_all(bind=engine)
 
 # Create FastAPI application
 app = FastAPI(title="Church App API")
@@ -49,7 +46,7 @@ async def health_check():
 
 
 # User Management Endpoints
-@app.post("/users/", response_model=schemas.User)
+@app.post("/users/", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     """
     Create a new user
@@ -61,13 +58,24 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(
         models.User.email == user.email).first()
     if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
 
     # Create new user
     # TODO: Add password hashing for security
     db_user = models.User(
         email=user.email,
-        full_name=user.full_name,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        phone_number=user.phone_number,
+        address=user.address,
+        address2=user.address2,
+        city=user.city,
+        state=user.state,
+        role=user.role,
+        date_of_birth=user.date_of_birth,
         hashed_password=user.password  # This should be hashed in production
     )
     db.add(db_user)
@@ -77,14 +85,96 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @app.get("/users/", response_model=List[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_users(
+    skip: int = 0,
+    limit: int = 100,
+    role: models.UserRole = None,
+    is_active: bool = None,
+    city: str = None,
+    state: str = None,
+    db: Session = Depends(get_db)
+):
     """
     Get list of users
     - Supports pagination with skip and limit
+    - Can filter by role, active status, city, and state
     - Returns list of users
     """
-    users = db.query(models.User).offset(skip).limit(limit).all()
+    query = db.query(models.User)
+
+    # Apply filters if provided
+    if role is not None:
+        query = query.filter(models.User.role == role)
+    if is_active is not None:
+        query = query.filter(models.User.is_active == is_active)
+    if city is not None:
+        query = query.filter(models.User.city.ilike(f"%{city}%"))
+    if state is not None:
+        query = query.filter(models.User.state.ilike(f"%{state}%"))
+
+    # Apply pagination
+    users = query.offset(skip).limit(limit).all()
     return users
+
+
+@app.get("/users/{user_id}", response_model=schemas.User)
+def read_user(user_id: int, db: Session = Depends(get_db)):
+    """
+    Get a specific user by ID
+    """
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    return db_user
+
+
+@app.put("/users/{user_id}", response_model=schemas.User)
+def update_user(
+    user_id: int,
+    user_update: schemas.UserUpdate,
+    db: Session = Depends(get_db)
+):
+    """
+    Update a user's information
+    - Only updates provided fields
+    - Validates all updates
+    """
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+    # Update only provided fields
+    update_data = user_update.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_user, field, value)
+
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
+@app.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    """
+    Delete a user
+    - Permanently removes the user from the database
+    """
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+    db.delete(db_user)
+    db.commit()
+    return None
 
 
 # Event Management Endpoints

@@ -1,7 +1,6 @@
 """
 Database Configuration for the Church App
-This file handles database connection and session management using SQLAlchemy.
-It provides the database engine and session factory for the application.
+This file handles database connection and session management.
 """
 
 from sqlalchemy import create_engine
@@ -19,8 +18,8 @@ load_dotenv()
 SQLALCHEMY_DATABASE_URL = os.getenv(
     "DATABASE_URL", "sqlite:///./church_app.db")
 
-# Create the SQLAlchemy engine
-# This is the main entry point for database operations
+# Create SQLAlchemy engine
+# connect_args is needed for SQLite
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
     # This argument is needed for SQLite to allow multiple threads
@@ -40,8 +39,8 @@ Base = declarative_base()
 
 def get_db():
     """
-    Creates a new database session for a request.
-    Ensures the session is closed after the request is complete.
+    Database dependency for FastAPI endpoints.
+    Yields a database session and ensures it's closed after use.
     """
     db = SessionLocal()
     try:
