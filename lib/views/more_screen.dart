@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/auth_service.dart';
 import 'home_screen.dart';
 import 'sermons_screen.dart';
 import 'events_screen.dart';
@@ -15,7 +17,9 @@ class MoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authService = context.watch<AuthService>();
     final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('More', style: theme.textTheme.titleLarge),
@@ -26,6 +30,16 @@ class MoreScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          if (authService.isAuthenticated && !authService.isGuest) ...[
+            ListTile(
+              leading: const CircleAvatar(
+                child: Icon(Icons.person_outline),
+              ),
+              title: Text(authService.userName ?? 'User'),
+              subtitle: Text(authService.userEmail ?? ''),
+            ),
+            const Divider(),
+          ],
           Card(
             child: ListTile(
               leading: CircleAvatar(
@@ -123,6 +137,55 @@ class MoreScreen extends StatelessWidget {
               },
             ),
           ),
+          if (authService.isAuthenticated) ...[
+            const Divider(),
+            Card(
+              color: Colors.red.shade50,
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: Colors.red.shade100,
+                  child: const Icon(Icons.logout, color: Colors.red),
+                ),
+                title: const Text(
+                  'Sign Out',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: () async {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Sign Out'),
+                      content: const Text('Are you sure you want to sign out?'),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: const Text('Sign Out'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirmed == true && context.mounted) {
+                    await authService.signOut();
+                  }
+                },
+              ),
+            ),
+          ],
         ],
       ),
     );

@@ -2,14 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:provider/provider.dart';
 import 'views/home_screen.dart';
 import 'views/sermons_screen.dart';
 import 'views/events_screen.dart';
 import 'views/prayer_screen.dart';
 import 'views/more_screen.dart';
+import 'views/auth/login_screen.dart';
+import 'services/auth_service.dart';
 
 void main() {
-  runApp(const ChurchApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AuthService(),
+      child: const ChurchApp(),
+    ),
+  );
 }
 
 class ChurchApp extends StatelessWidget {
@@ -101,7 +109,35 @@ class ChurchApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const AuthWrapper(),
+    );
+  }
+}
+
+class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    // Check authentication state when the app starts
+    Future.microtask(() => context.read<AuthService>().checkAuthState());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AuthService>(
+      builder: (context, authService, _) {
+        if (authService.isAuthenticated) {
+          return const HomePage();
+        }
+        return const LoginScreen();
+      },
     );
   }
 }
