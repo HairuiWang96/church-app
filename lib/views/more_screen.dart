@@ -35,7 +35,7 @@ class MoreScreen extends StatelessWidget {
               leading: const CircleAvatar(
                 child: Icon(Icons.person_outline),
               ),
-              title: Text(authService.userName ?? 'User'),
+              title: Text(authService.fullName ?? 'User'),
               subtitle: Text(authService.userEmail ?? ''),
             ),
             const Divider(),
