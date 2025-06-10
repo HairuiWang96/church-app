@@ -34,10 +34,10 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() => _isLoading = true);
       try {
         await context.read<AuthService>().signUp(
-              firstName: _firstNameController.text.trim(),
-              lastName: _lastNameController.text.trim(),
               email: _emailController.text.trim(),
               password: _passwordController.text,
+              firstName: _firstNameController.text.trim(),
+              lastName: _lastNameController.text.trim(),
             );
       } catch (e) {
         if (mounted) {
@@ -57,7 +57,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Account'),
+        title: const Text('Sign Up'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -67,55 +67,55 @@ class _SignupScreenState extends State<SignupScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 24),
+                // Logo
+                Center(
+                  child: Image.asset(
+                    'assets/images/FBC-color-horizontal.png',
+                    height: 120,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(height: 32),
                 Text(
-                  'Join Our Community',
+                  'Create Account',
                   style: Theme.of(context).textTheme.displayMedium,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Create your account to get started',
+                  'Join our community',
                   style: Theme.of(context).textTheme.bodyLarge,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _firstNameController,
-                        decoration: const InputDecoration(
-                          labelText: 'First Name',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.person_outline),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your first name';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _lastNameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Last Name',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.person_outline),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your last name';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                  ],
+                TextFormField(
+                  controller: _firstNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'First Name',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.person_outline),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your first name';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _lastNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Last Name',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.person_outline),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your last name';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -187,7 +187,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
-                      : const Text('Create Account'),
+                      : const Text('Sign Up'),
                 ),
                 const SizedBox(height: 16),
                 TextButton(
@@ -196,7 +196,21 @@ class _SignupScreenState extends State<SignupScreen> {
                       : () {
                           Navigator.pop(context);
                         },
-                  child: const Text('Already have an account? Sign In'),
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'Already have an account? ',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        TextSpan(
+                          text: 'Sign In',
+                          style:
+                              TextStyle(color: Theme.of(context).primaryColor),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),

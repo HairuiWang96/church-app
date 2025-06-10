@@ -75,6 +75,15 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 48),
+                // Logo
+                Center(
+                  child: Image.asset(
+                    'assets/images/FBC-color-horizontal.png',
+                    height: 120,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(height: 48),
                 Text(
                   'Welcome Back',
                   style: Theme.of(context).textTheme.displayMedium,
@@ -151,7 +160,21 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           );
                         },
-                  child: const Text('Don\'t have an account? Sign Up'),
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'Don\'t have an account? ',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        TextSpan(
+                          text: 'Sign Up',
+                          style:
+                              TextStyle(color: Theme.of(context).primaryColor),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 OutlinedButton(
