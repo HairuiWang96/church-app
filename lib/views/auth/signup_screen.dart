@@ -46,11 +46,17 @@ class _SignupScreenState extends State<SignupScreen> {
             const SnackBar(
               content: Text('Account created successfully!'),
               backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
             ),
           );
 
+          // Wait for 2 seconds before navigating
+          await Future.delayed(const Duration(seconds: 3));
+
           // Navigate to home screen or login screen
-          Navigator.of(context).popUntil((route) => route.isFirst);
+          if (mounted) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
         }
       } catch (e) {
         if (mounted) {
