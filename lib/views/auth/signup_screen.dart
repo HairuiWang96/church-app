@@ -39,10 +39,52 @@ class _SignupScreenState extends State<SignupScreen> {
               firstName: _firstNameController.text.trim(),
               lastName: _lastNameController.text.trim(),
             );
+
+        if (mounted) {
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Account created successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          // Navigate to home screen or login screen
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        }
       } catch (e) {
         if (mounted) {
+          String errorMessage = 'An error occurred';
+
+          // Format the error message to be more user-friendly
+          if (e.toString().contains('Email already registered')) {
+            errorMessage =
+                'This email is already registered. Please use a different email or try signing in.';
+          } else if (e.toString().contains('Failed to sign up')) {
+            errorMessage =
+                'Unable to create account. Please check your internet connection and try again.';
+          } else if (e.toString().contains('Connection refused')) {
+            errorMessage =
+                'Unable to connect to the server. Please check your internet connection and try again.';
+          } else if (e.toString().contains('timeout')) {
+            errorMessage =
+                'The request timed out. Please check your internet connection and try again.';
+          }
+
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString())),
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.red,
+              duration:
+                  const Duration(days: 1), // Effectively infinite duration
+              action: SnackBarAction(
+                label: 'Dismiss',
+                textColor: Colors.white,
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                },
+              ),
+            ),
           );
         }
       } finally {

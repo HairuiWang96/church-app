@@ -4,8 +4,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AuthService extends ChangeNotifier {
-  static const String baseUrl =
-      'http://localhost:8000'; // Change this to your backend URL
+  // Update this to your actual backend server URL
+  // static const String baseUrl = 'http://10.0.2.2:8000'; // For Android emulator
+  static const String baseUrl = 'http://localhost:8000'; // For iOS simulator
+  // static const String baseUrl = 'https://your-production-server.com'; // For production
   bool _isAuthenticated = false;
   bool _isGuest = false;
   String? _userId;
@@ -30,6 +32,7 @@ class AuthService extends ChangeNotifier {
     required String password,
   }) async {
     try {
+      print('Attempting to sign up user: $email'); // Debug log
       final response = await http.post(
         Uri.parse('$baseUrl/users/'),
         headers: {'Content-Type': 'application/json'},
@@ -41,6 +44,9 @@ class AuthService extends ChangeNotifier {
           'role': 'member',
         }),
       );
+
+      print('Signup response status: ${response.statusCode}'); // Debug log
+      print('Signup response body: ${response.body}'); // Debug log
 
       if (response.statusCode == 201) {
         final userData = jsonDecode(response.body);
@@ -63,9 +69,15 @@ class AuthService extends ChangeNotifier {
         notifyListeners();
       } else {
         final error = jsonDecode(response.body);
-        throw error['detail'] ?? 'Failed to sign up';
+        throw error['detail'] ?? 'Failed to sign up: ${response.statusCode}';
       }
     } catch (e) {
+      print('Signup error: $e'); // Debug log
+      if (e is FormatException) {
+        throw 'Invalid response from server. Please try again.';
+      } else if (e is http.ClientException) {
+        throw 'Unable to connect to the server. Please check your internet connection.';
+      }
       rethrow;
     }
   }
