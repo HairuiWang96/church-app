@@ -41,6 +41,9 @@ class _SignupScreenState extends State<SignupScreen> {
             );
 
         if (mounted) {
+          // Clear any existing error messages
+          ScaffoldMessenger.of(context).clearSnackBars();
+
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -60,6 +63,9 @@ class _SignupScreenState extends State<SignupScreen> {
         }
       } catch (e) {
         if (mounted) {
+          // Clear any existing messages before showing the error
+          ScaffoldMessenger.of(context).clearSnackBars();
+
           String errorMessage = 'An error occurred';
 
           // Format the error message to be more user-friendly
